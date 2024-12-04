@@ -18,21 +18,21 @@ public class IntSegment
     private static final int INSTANCE_SIZE = instanceSize(IntSegment.class);
     public static final int SIZE_IN_BYTES_PER_POSITION = Integer.BYTES + Byte.BYTES;
 
-    /* ============= values =========== */
+    /* ============= storage =========== */
     private boolean[] valueIsNull = new boolean[0];
     private int[] values = new int[0];
-    /* ============= values =========== */
+    /* ============= storage =========== */
 
-    private final int initialCount;
+    private final int initialEntityCount;
     private boolean initialized;
     private int position;
 
     private SegmentStatus status;
     private final SizeCalculator sizeCalculator;
 
-    public IntSegment(@Nullable SegmentStatus status, int expectedEntries, SizeCalculator sizeCalculator)
+    public IntSegment(@Nullable SegmentStatus status, int expectedCapacity, SizeCalculator sizeCalculator)
     {
-        this.initialCount = max(expectedEntries, 1);
+        this.initialEntityCount = max(expectedCapacity, 1);
         this.status = status;
         this.sizeCalculator = sizeCalculator;
         if(status != null){
@@ -50,7 +50,7 @@ public class IntSegment
             newSize = sizeCalculator.calculateNewArraySize(capacity);
         }
         else {
-            newSize = initialCount;
+            newSize = initialEntityCount;
             initialized = true;
         }
         newSize = max(newSize, capacity);
