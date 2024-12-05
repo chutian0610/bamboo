@@ -1,65 +1,34 @@
 package info.victorchu.bamboo.segment;
 
-import static info.victorchu.bamboo.segment.SegmentUtils.checkReadablePosition;
-import static info.victorchu.bamboo.utils.SizeOf.instanceSize;
-import static info.victorchu.bamboo.utils.SizeOf.sizeOf;
-import static java.lang.Math.max;
-
-import info.victorchu.bamboo.RetainedSizeAware;
+import javax.annotation.Nullable;
 
 import java.util.Arrays;
 
-import javax.annotation.Nullable;
+import static info.victorchu.bamboo.segment.SegmentUtils.checkReadablePosition;
+import static info.victorchu.bamboo.utils.SizeOf.instanceSize;
+import static info.victorchu.bamboo.utils.SizeOf.sizeOf;
 
 public class IntSegment
-        implements Segment, RetainedSizeAware
+        extends PrimitiveSegment
 {
 
-    private static final int INSTANCE_SIZE = instanceSize(IntSegment.class);
     public static final int SIZE_IN_BYTES_PER_POSITION = Integer.BYTES + Byte.BYTES;
-
+    private static final int INSTANCE_SIZE = instanceSize(IntSegment.class);
     /* ============= storage =========== */
     private boolean[] valueIsNull = new boolean[0];
     private int[] values = new int[0];
     /* ============= storage =========== */
 
-    private final int initialEntityCount;
-    private boolean initialized;
-    private int position;
-
-    private SegmentStatus status;
-    private final SizeCalculator sizeCalculator;
-
     public IntSegment(@Nullable SegmentStatus status, int expectedCapacity, SizeCalculator sizeCalculator)
     {
-        this.initialEntityCount = max(expectedCapacity, 1);
-        this.status = status;
-        this.sizeCalculator = sizeCalculator;
-        if(status != null){
-            status.updateMemUsedSize(getRetainedSize());
-        }
+        super(status, expectedCapacity, sizeCalculator);
     }
 
-    private void ensureCapacity(int capacity)
+    @Override
+    public void reAllocate(int newSize)
     {
-        if (values.length >= capacity) {
-            return;
-        }
-        int newSize;
-        if (initialized) {
-            newSize = sizeCalculator.calculateNewArraySize(capacity);
-        }
-        else {
-            newSize = initialEntityCount;
-            initialized = true;
-        }
-        newSize = max(newSize, capacity);
-
         valueIsNull = Arrays.copyOf(valueIsNull, newSize);
         values = Arrays.copyOf(values, newSize);
-        if(status != null){
-            status.updateMemUsedSize(getRetainedSize());
-        }
     }
 
     @Override
@@ -98,14 +67,14 @@ public class IntSegment
         position++;
         if (status != null) {
             status.hasNonNullValue();
-            status.addBytes(SIZE_IN_BYTES_PER_POSITION);
+            status.addBytes(getSizePerPosition());
         }
         return this;
     }
 
     public boolean isNull(int position)
     {
-        checkReadablePosition(this,position);
+        checkReadablePosition(this, position);
         return valueIsNull[position];
     }
 
@@ -116,8 +85,14 @@ public class IntSegment
         position++;
         if (status != null) {
             status.hasNullValue();
-            status.addBytes(Byte.BYTES + Integer.BYTES);
+            status.addBytes(getSizePerPosition());
         }
         return this;
+    }
+
+    @Override
+    public int getSizePerPosition()
+    {
+        return SIZE_IN_BYTES_PER_POSITION;
     }
 }
