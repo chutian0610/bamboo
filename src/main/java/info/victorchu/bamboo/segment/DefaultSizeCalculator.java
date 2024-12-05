@@ -1,6 +1,4 @@
-package info.victorchu.bamboo;
-
-import info.victorchu.bamboo.segment.SizeCalculator;
+package info.victorchu.bamboo.segment;
 
 import static java.lang.String.format;
 
