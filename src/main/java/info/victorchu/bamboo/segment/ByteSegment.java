@@ -70,8 +70,8 @@ public class ByteSegment
         ensureCapacity(position + 1);
         values[position] = value;
         position++;
+        existNonNullValue(true);
         if (status != null) {
-            status.hasNonNullValue();
             status.addBytes(getSizePerPosition());
         }
         return this;
@@ -88,8 +88,8 @@ public class ByteSegment
         ensureCapacity(position + 1);
         valueIsNull[position] = true;
         position++;
+        existNullValue(true);
         if (status != null) {
-            status.hasNullValue();
             status.addBytes(getSizePerPosition());
         }
         return this;

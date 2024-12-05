@@ -14,6 +14,8 @@ public abstract class PrimitiveSegment
     protected final SizeCalculator sizeCalculator;
     protected boolean initialized;
     protected int position;
+    private boolean hasNullValue;
+    private boolean hasNonNullValue;
 
     public PrimitiveSegment(@Nullable SegmentStatus status, int expectedCapacity, SizeCalculator sizeCalculator)
     {
@@ -43,6 +45,26 @@ public abstract class PrimitiveSegment
         if (status != null) {
             status.updateMemUsedSize(getRetainedSize());
         }
+    }
+
+    public void existNullValue(boolean hasNullValue)
+    {
+        this.hasNullValue = hasNullValue;
+    }
+
+    public void existNonNullValue(boolean hasNonNullValue)
+    {
+        this.hasNonNullValue = hasNonNullValue;
+    }
+
+    public boolean hasNullValue()
+    {
+        return hasNullValue;
+    }
+
+    public boolean hasNonNullValue()
+    {
+        return hasNonNullValue;
     }
 
     public abstract void reAllocate(int newSize);
