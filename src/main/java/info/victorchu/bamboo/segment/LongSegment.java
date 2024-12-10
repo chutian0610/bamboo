@@ -8,17 +8,17 @@ import static info.victorchu.bamboo.segment.SegmentUtils.checkReadablePosition;
 import static info.victorchu.bamboo.utils.SizeOf.instanceSize;
 import static info.victorchu.bamboo.utils.SizeOf.sizeOf;
 
-public class ByteSegment
+public class LongSegment
         extends FixedWidthSegment
 {
-    public static final int SIZE_IN_BYTES_PER_ENTITY = Byte.BYTES + Byte.BYTES;
-    private static final int INSTANCE_SIZE = instanceSize(ByteSegment.class);
+    public static final int SIZE_IN_BYTES_PER_ENTITY = Long.BYTES + Byte.BYTES;
+    private static final int INSTANCE_SIZE = instanceSize(LongSegment.class);
     /* ============= storage =========== */
     private boolean[] valueIsNull = new boolean[0];
-    private byte[] values = new byte[0];
+    private long[] values = new long[0];
     /* ============= storage =========== */
 
-    public ByteSegment(@Nullable SegmentStatus status, int expectedCapacity, SizeCalculator sizeCalculator)
+    public LongSegment(@Nullable SegmentStatus status, int expectedCapacity, SizeCalculator sizeCalculator)
     {
         super(status, expectedCapacity, sizeCalculator);
     }
@@ -59,13 +59,13 @@ public class ByteSegment
         return values.length;
     }
 
-    public byte getByte(int position)
+    public long getLong(int position)
     {
         checkReadablePosition(this, position);
         return values[position];
     }
 
-    public ByteSegment appendByte(byte value)
+    public LongSegment appendLong(long value)
     {
         ensureCapacity(position + 1);
         values[position] = value;
@@ -83,7 +83,7 @@ public class ByteSegment
         return valueIsNull[position];
     }
 
-    public ByteSegment appendNull()
+    public LongSegment appendNull()
     {
         ensureCapacity(position + 1);
         valueIsNull[position] = true;

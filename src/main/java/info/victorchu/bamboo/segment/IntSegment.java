@@ -9,10 +9,10 @@ import static info.victorchu.bamboo.utils.SizeOf.instanceSize;
 import static info.victorchu.bamboo.utils.SizeOf.sizeOf;
 
 public class IntSegment
-        extends PrimitiveSegment
+        extends FixedWidthSegment
 {
 
-    public static final int SIZE_IN_BYTES_PER_POSITION = Integer.BYTES + Byte.BYTES;
+    public static final int SIZE_IN_BYTES_PER_ENTITY = Integer.BYTES + Byte.BYTES;
     private static final int INSTANCE_SIZE = instanceSize(IntSegment.class);
     /* ============= storage =========== */
     private boolean[] valueIsNull = new boolean[0];
@@ -67,7 +67,7 @@ public class IntSegment
         position++;
         existNonNullValue(true);
         if (status != null) {
-            status.addBytes(getSizePerPosition());
+            status.addBytes(getEntitySize());
         }
         return this;
     }
@@ -85,14 +85,14 @@ public class IntSegment
         position++;
         existNullValue(true);
         if (status != null) {
-            status.addBytes(getSizePerPosition());
+            status.addBytes(getEntitySize());
         }
         return this;
     }
 
     @Override
-    public int getSizePerPosition()
+    public int getEntitySize()
     {
-        return SIZE_IN_BYTES_PER_POSITION;
+        return SIZE_IN_BYTES_PER_ENTITY;
     }
 }

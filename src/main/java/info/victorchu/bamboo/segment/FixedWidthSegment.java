@@ -6,7 +6,7 @@ import javax.annotation.Nullable;
 
 import static java.lang.Math.max;
 
-public abstract class PrimitiveSegment
+public abstract class FixedWidthSegment
         implements Segment, RetainedSizeAware
 {
     protected final int initialEntityCount;
@@ -17,7 +17,7 @@ public abstract class PrimitiveSegment
     private boolean hasNullValue;
     private boolean hasNonNullValue;
 
-    public PrimitiveSegment(@Nullable SegmentStatus status, int expectedCapacity, SizeCalculator sizeCalculator)
+    public FixedWidthSegment(@Nullable SegmentStatus status, int expectedCapacity, SizeCalculator sizeCalculator)
     {
         this.initialEntityCount = max(expectedCapacity, 1);
         this.status = status;
@@ -69,5 +69,5 @@ public abstract class PrimitiveSegment
 
     public abstract void reAllocate(int newSize);
 
-    public abstract int getSizePerPosition();
+    public abstract int getEntitySize();
 }

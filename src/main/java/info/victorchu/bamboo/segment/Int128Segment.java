@@ -1,5 +1,7 @@
 package info.victorchu.bamboo.segment;
 
+import io.airlift.slice.Slice;
+
 import javax.annotation.Nullable;
 
 import java.util.Arrays;
@@ -8,17 +10,19 @@ import static info.victorchu.bamboo.segment.SegmentUtils.checkReadablePosition;
 import static info.victorchu.bamboo.utils.SizeOf.instanceSize;
 import static info.victorchu.bamboo.utils.SizeOf.sizeOf;
 
-public class ByteSegment
+public class Int128Segment
         extends FixedWidthSegment
 {
-    public static final int SIZE_IN_BYTES_PER_ENTITY = Byte.BYTES + Byte.BYTES;
+    public static final int INT128_BYTES = Long.BYTES + Long.BYTES;
+    public static final int SIZE_IN_BYTES_PER_ENTITY = INT128_BYTES + Byte.BYTES;
     private static final int INSTANCE_SIZE = instanceSize(ByteSegment.class);
+
     /* ============= storage =========== */
     private boolean[] valueIsNull = new boolean[0];
-    private byte[] values = new byte[0];
+    private long[] values = new long[0];
     /* ============= storage =========== */
 
-    public ByteSegment(@Nullable SegmentStatus status, int expectedCapacity, SizeCalculator sizeCalculator)
+    public Int128Segment(@Nullable SegmentStatus status, int expectedCapacity, SizeCalculator sizeCalculator)
     {
         super(status, expectedCapacity, sizeCalculator);
     }
@@ -27,7 +31,7 @@ public class ByteSegment
     public void reAllocate(int newSize)
     {
         valueIsNull = Arrays.copyOf(valueIsNull, newSize);
-        values = Arrays.copyOf(values, newSize);
+        values = Arrays.copyOf(values, newSize * 2);
     }
 
     @Override
@@ -56,25 +60,7 @@ public class ByteSegment
     @Override
     public int getCapacity()
     {
-        return values.length;
-    }
-
-    public byte getByte(int position)
-    {
-        checkReadablePosition(this, position);
-        return values[position];
-    }
-
-    public ByteSegment appendByte(byte value)
-    {
-        ensureCapacity(position + 1);
-        values[position] = value;
-        position++;
-        existNonNullValue(true);
-        if (status != null) {
-            status.addBytes(getEntitySize());
-        }
-        return this;
+        return valueIsNull.length;
     }
 
     public boolean isNull(int position)
@@ -83,7 +69,7 @@ public class ByteSegment
         return valueIsNull[position];
     }
 
-    public ByteSegment appendNull()
+    public Int128Segment appendNull()
     {
         ensureCapacity(position + 1);
         valueIsNull[position] = true;
@@ -94,4 +80,19 @@ public class ByteSegment
         }
         return this;
     }
+
+//    public void appendEntity(Slice source)
+//    {
+//        ensureCapacity(position + 1);
+//
+//        int valueIndex = position * 2;
+//        values[valueIndex] = source.getLong(0);
+//        values[valueIndex + 1] =  source.getLong(1);
+//
+//        existNonNullValue(true);
+//        position++;
+//        if (status != null) {
+//            status.addBytes(getEntitySize());
+//        }
+//    }
 }
