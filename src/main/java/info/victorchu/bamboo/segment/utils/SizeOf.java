@@ -39,7 +39,8 @@ import static sun.misc.Unsafe.ARRAY_OBJECT_INDEX_SCALE;
 import static sun.misc.Unsafe.ARRAY_SHORT_BASE_OFFSET;
 import static sun.misc.Unsafe.ARRAY_SHORT_INDEX_SCALE;
 
-public final class SizeOf {
+public final class SizeOf
+{
 
     public static final byte SIZE_OF_BYTE = 1;
     public static final byte SIZE_OF_SHORT = 2;
@@ -66,131 +67,167 @@ public final class SizeOf {
 
     private static final int SIMPLE_ENTRY_INSTANCE_SIZE = instanceSize(AbstractMap.SimpleEntry.class);
 
-    public static long sizeOf(boolean[] array) {
+    private SizeOf()
+    {
+    }
+
+    public static long sizeOf(boolean[] array)
+    {
         return (array == null) ? 0 : sizeOfBooleanArray(array.length);
     }
 
-    public static long sizeOf(byte[] array) {
+    public static long sizeOf(byte[] array)
+    {
         return (array == null) ? 0 : sizeOfByteArray(array.length);
     }
 
-    public static long sizeOf(short[] array) {
+    public static long sizeOf(short[] array)
+    {
         return (array == null) ? 0 : sizeOfShortArray(array.length);
     }
 
-    public static long sizeOf(char[] array) {
+    public static long sizeOf(char[] array)
+    {
         return (array == null) ? 0 : sizeOfCharArray(array.length);
     }
 
-    public static long sizeOf(int[] array) {
+    public static long sizeOf(int[] array)
+    {
         return (array == null) ? 0 : sizeOfIntArray(array.length);
     }
 
-    public static long sizeOf(long[] array) {
+    public static long sizeOf(long[] array)
+    {
         return (array == null) ? 0 : sizeOfLongArray(array.length);
     }
 
-    public static long sizeOf(float[] array) {
+    public static long sizeOf(float[] array)
+    {
         return (array == null) ? 0 : sizeOfFloatArray(array.length);
     }
 
-    public static long sizeOf(double[] array) {
+    public static long sizeOf(double[] array)
+    {
         return (array == null) ? 0 : sizeOfDoubleArray(array.length);
     }
 
-    public static long sizeOf(Object[] array) {
+    public static long sizeOf(Object[] array)
+    {
         return (array == null) ? 0 : sizeOfObjectArray(array.length);
     }
 
-    public static long sizeOf(Boolean value) {
+    public static long sizeOf(Boolean value)
+    {
         return value == null ? 0 : BOOLEAN_INSTANCE_SIZE;
     }
 
-    public static long sizeOf(Byte value) {
+    public static long sizeOf(Byte value)
+    {
         return value == null ? 0 : BYTE_INSTANCE_SIZE;
     }
 
-    public static long sizeOf(Short value) {
+    public static long sizeOf(Short value)
+    {
         return value == null ? 0 : SHORT_INSTANCE_SIZE;
     }
 
-    public static long sizeOf(Character value) {
+    public static long sizeOf(Character value)
+    {
         return value == null ? 0 : CHARACTER_INSTANCE_SIZE;
     }
 
-    public static long sizeOf(Integer value) {
+    public static long sizeOf(Integer value)
+    {
         return value == null ? 0 : INTEGER_INSTANCE_SIZE;
     }
 
-    public static long sizeOf(Long value) {
+    public static long sizeOf(Long value)
+    {
         return value == null ? 0 : LONG_INSTANCE_SIZE;
     }
 
-    public static long sizeOf(Float value) {
+    public static long sizeOf(Float value)
+    {
         return value == null ? 0 : FLOAT_INSTANCE_SIZE;
     }
 
-    public static long sizeOf(Double value) {
+    public static long sizeOf(Double value)
+    {
         return value == null ? 0 : DOUBLE_INSTANCE_SIZE;
     }
 
-    public static <T> long sizeOf(Optional<T> optional, ToLongFunction<T> valueSize) {
+    public static <T> long sizeOf(Optional<T> optional, ToLongFunction<T> valueSize)
+    {
         return optional != null && optional.isPresent() ? OPTIONAL_INSTANCE_SIZE + valueSize.applyAsLong(optional.get()) : 0;
     }
 
-    public static long sizeOf(OptionalInt optional) {
+    public static long sizeOf(OptionalInt optional)
+    {
         return optional != null && optional.isPresent() ? OPTIONAL_INT_INSTANCE_SIZE : 0;
     }
 
-    public static long sizeOf(OptionalLong optional) {
+    public static long sizeOf(OptionalLong optional)
+    {
         return optional != null && optional.isPresent() ? OPTIONAL_LONG_INSTANCE_SIZE : 0;
     }
 
-    public static long sizeOf(OptionalDouble optional) {
+    public static long sizeOf(OptionalDouble optional)
+    {
         return optional != null && optional.isPresent() ? OPTIONAL_DOUBLE_INSTANCE_SIZE : 0;
     }
 
-    public static long sizeOfBooleanArray(int length) {
+    public static long sizeOfBooleanArray(int length)
+    {
         return ARRAY_BOOLEAN_BASE_OFFSET + (((long) ARRAY_BOOLEAN_INDEX_SCALE) * length);
     }
 
-    public static long sizeOfByteArray(int length) {
+    public static long sizeOfByteArray(int length)
+    {
         return ARRAY_BYTE_BASE_OFFSET + (((long) ARRAY_BYTE_INDEX_SCALE) * length);
     }
 
-    public static long sizeOfShortArray(int length) {
+    public static long sizeOfShortArray(int length)
+    {
         return ARRAY_SHORT_BASE_OFFSET + (((long) ARRAY_SHORT_INDEX_SCALE) * length);
     }
 
-    public static long sizeOfCharArray(int length) {
+    public static long sizeOfCharArray(int length)
+    {
         return ARRAY_CHAR_BASE_OFFSET + (((long) ARRAY_CHAR_INDEX_SCALE) * length);
     }
 
-    public static long sizeOfIntArray(int length) {
+    public static long sizeOfIntArray(int length)
+    {
         return ARRAY_INT_BASE_OFFSET + (((long) ARRAY_INT_INDEX_SCALE) * length);
     }
 
-    public static long sizeOfLongArray(int length) {
+    public static long sizeOfLongArray(int length)
+    {
         return ARRAY_LONG_BASE_OFFSET + (((long) ARRAY_LONG_INDEX_SCALE) * length);
     }
 
-    public static long sizeOfFloatArray(int length) {
+    public static long sizeOfFloatArray(int length)
+    {
         return ARRAY_FLOAT_BASE_OFFSET + (((long) ARRAY_FLOAT_INDEX_SCALE) * length);
     }
 
-    public static long sizeOfDoubleArray(int length) {
+    public static long sizeOfDoubleArray(int length)
+    {
         return ARRAY_DOUBLE_BASE_OFFSET + (((long) ARRAY_DOUBLE_INDEX_SCALE) * length);
     }
 
-    public static long sizeOfObjectArray(int length) {
+    public static long sizeOfObjectArray(int length)
+    {
         return ARRAY_OBJECT_BASE_OFFSET + (((long) ARRAY_OBJECT_INDEX_SCALE) * length);
     }
 
-    public static long estimatedSizeOf(String string) {
+    public static long estimatedSizeOf(String string)
+    {
         return (string == null) ? 0 : (STRING_INSTANCE_SIZE + string.length() * Character.BYTES);
     }
 
-    public static <T> long estimatedSizeOf(List<T> list, ToLongFunction<T> valueSize) {
+    public static <T> long estimatedSizeOf(List<T> list, ToLongFunction<T> valueSize)
+    {
         if (list == null) {
             return 0;
         }
@@ -202,7 +239,8 @@ public final class SizeOf {
         return result;
     }
 
-    public static <T> long estimatedSizeOf(Queue<T> queue, ToLongFunction<T> valueSize) {
+    public static <T> long estimatedSizeOf(Queue<T> queue, ToLongFunction<T> valueSize)
+    {
         if (queue == null) {
             return 0;
         }
@@ -214,7 +252,8 @@ public final class SizeOf {
         return result;
     }
 
-    public static <T> long estimatedSizeOf(Set<T> set, ToLongFunction<T> valueSize) {
+    public static <T> long estimatedSizeOf(Set<T> set, ToLongFunction<T> valueSize)
+    {
         if (set == null) {
             return 0;
         }
@@ -226,7 +265,8 @@ public final class SizeOf {
         return result;
     }
 
-    public static <K, V> long estimatedSizeOf(Map<K, V> map, ToLongFunction<K> keySize, ToLongFunction<V> valueSize) {
+    public static <K, V> long estimatedSizeOf(Map<K, V> map, ToLongFunction<K> keySize, ToLongFunction<V> valueSize)
+    {
         if (map == null) {
             return 0;
         }
@@ -240,7 +280,8 @@ public final class SizeOf {
         return result;
     }
 
-    public static <K, V> long estimatedSizeOf(Map<K, V> map, long keySize, long valueSize) {
+    public static <K, V> long estimatedSizeOf(Map<K, V> map, long keySize, long valueSize)
+    {
         if (map == null) {
             return 0;
         }
@@ -250,10 +291,12 @@ public final class SizeOf {
         return result;
     }
 
-    public static int instanceSize(Class<?> clazz) {
+    public static int instanceSize(Class<?> clazz)
+    {
         try {
             return toIntExact(ClassLayout.parseClass(clazz).instanceSize());
-        } catch (RuntimeException e) {
+        }
+        catch (RuntimeException e) {
             VirtualMachine vm = VM.current();
             ClassData classData = ClassData.parseClass(clazz);
             long instanceSize = vm.objectHeaderSize();
@@ -263,8 +306,5 @@ public final class SizeOf {
             instanceSize = MathUtil.align(instanceSize, vm.objectAlignment());
             return toIntExact(instanceSize);
         }
-    }
-
-    private SizeOf() {
     }
 }

@@ -9,7 +9,7 @@ public class DefaultSizeCalculator
     public static final DefaultSizeCalculator INSTANCE = new DefaultSizeCalculator();
     private static final int DEFAULT_CAPACITY = 64;
 
-    public int calculateNewArraySize(int currentSize,int targetSize)
+    public int calculateNewArraySize(int currentSize, int targetSize)
     {
         // grow array by 50%
         long newSize = (long) currentSize + (currentSize >> 1);

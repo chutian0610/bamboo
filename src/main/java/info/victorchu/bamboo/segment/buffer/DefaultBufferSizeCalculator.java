@@ -9,6 +9,7 @@ public class DefaultBufferSizeCalculator
 
     static final int SLICE_ALLOC_THRESHOLD = 524_288; // 2^19
     static final double SLICE_ALLOW_SKEW = 1.25; // must be > 1!
+
     @Override
     public int calculateNewArraySize(int currentSize, int targetSize)
     {

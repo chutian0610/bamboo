@@ -32,7 +32,7 @@ public abstract class FixedWidthSegment
         }
         int newSize;
         if (initialized) {
-            newSize = sizeCalculator.calculateNewArraySize(getCapacity(),capacity);
+            newSize = sizeCalculator.calculateNewArraySize(getCapacity(), capacity);
         }
         else {
             newSize = initialEntityCount;

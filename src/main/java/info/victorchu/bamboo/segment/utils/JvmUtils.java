@@ -15,6 +15,14 @@ import static sun.misc.Unsafe.ARRAY_SHORT_INDEX_SCALE;
 public class JvmUtils
 {
     public static final Unsafe unsafe;
+
+    private static void assertArrayIndexScale(final String name, int actualIndexScale, int expectedIndexScale)
+    {
+        if (actualIndexScale != expectedIndexScale) {
+            throw new IllegalStateException(name + " array index scale must be " + expectedIndexScale + ", but is " + actualIndexScale);
+        }
+    }
+
     static {
         try {
             // fetch theUnsafe object
@@ -36,12 +44,6 @@ public class JvmUtils
         }
         catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
-        }
-    }
-    private static void assertArrayIndexScale(final String name, int actualIndexScale, int expectedIndexScale)
-    {
-        if (actualIndexScale != expectedIndexScale) {
-            throw new IllegalStateException(name + " array index scale must be " + expectedIndexScale + ", but is " + actualIndexScale);
         }
     }
 }
