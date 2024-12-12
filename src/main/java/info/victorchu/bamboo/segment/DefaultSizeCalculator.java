@@ -6,13 +6,10 @@ public class DefaultSizeCalculator
         implements SizeCalculator
 {
 
+    public static final DefaultSizeCalculator INSTANCE = new DefaultSizeCalculator();
     private static final int DEFAULT_CAPACITY = 64;
-    /**
-     * @see java.util.ArrayList#MAX_ARRAY_SIZE for explanation
-     */
-    private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
 
-    public int calculateNewArraySize(int currentSize)
+    public int calculateNewArraySize(int currentSize,int targetSize)
     {
         // grow array by 50%
         long newSize = (long) currentSize + (currentSize >> 1);

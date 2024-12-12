@@ -1,7 +1,5 @@
 package info.victorchu.bamboo.segment;
 
-import info.victorchu.bamboo.RetainedSizeAware;
-
 public class VariableWidthSegment
         implements Segment, RetainedSizeAware
 {

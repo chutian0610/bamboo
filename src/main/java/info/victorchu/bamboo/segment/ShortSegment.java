@@ -5,8 +5,8 @@ import javax.annotation.Nullable;
 import java.util.Arrays;
 
 import static info.victorchu.bamboo.segment.SegmentUtils.checkReadablePosition;
-import static info.victorchu.bamboo.utils.SizeOf.instanceSize;
-import static info.victorchu.bamboo.utils.SizeOf.sizeOf;
+import static info.victorchu.bamboo.segment.utils.SizeOf.instanceSize;
+import static info.victorchu.bamboo.segment.utils.SizeOf.sizeOf;
 
 public class ShortSegment
         extends FixedWidthSegment

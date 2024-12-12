@@ -1,4 +1,4 @@
-package info.victorchu.bamboo.utils;
+package info.victorchu.bamboo.segment.utils;
 
 public class PreConditions
 {

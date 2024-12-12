@@ -1,4 +1,4 @@
-package info.victorchu.bamboo.utils;
+package info.victorchu.bamboo.segment.utils;
 
 import org.openjdk.jol.info.ClassData;
 import org.openjdk.jol.info.ClassLayout;
@@ -40,6 +40,14 @@ import static sun.misc.Unsafe.ARRAY_SHORT_BASE_OFFSET;
 import static sun.misc.Unsafe.ARRAY_SHORT_INDEX_SCALE;
 
 public final class SizeOf {
+
+    public static final byte SIZE_OF_BYTE = 1;
+    public static final byte SIZE_OF_SHORT = 2;
+    public static final byte SIZE_OF_INT = 4;
+    public static final byte SIZE_OF_LONG = 8;
+    public static final byte SIZE_OF_FLOAT = 4;
+    public static final byte SIZE_OF_DOUBLE = 8;
+
     public static final int BOOLEAN_INSTANCE_SIZE = instanceSize(Boolean.class);
     public static final int BYTE_INSTANCE_SIZE = instanceSize(Byte.class);
     public static final int SHORT_INSTANCE_SIZE = instanceSize(Short.class);

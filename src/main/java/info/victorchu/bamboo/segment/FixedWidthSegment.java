@@ -1,7 +1,5 @@
 package info.victorchu.bamboo.segment;
 
-import info.victorchu.bamboo.RetainedSizeAware;
-
 import javax.annotation.Nullable;
 
 import static java.lang.Math.max;
@@ -34,7 +32,7 @@ public abstract class FixedWidthSegment
         }
         int newSize;
         if (initialized) {
-            newSize = sizeCalculator.calculateNewArraySize(capacity);
+            newSize = sizeCalculator.calculateNewArraySize(getCapacity(),capacity);
         }
         else {
             newSize = initialEntityCount;

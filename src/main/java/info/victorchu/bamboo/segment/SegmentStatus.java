@@ -1,8 +1,6 @@
 package info.victorchu.bamboo.segment;
 
-import info.victorchu.bamboo.RetainedSizeAware;
-
-import static info.victorchu.bamboo.utils.SizeOf.instanceSize;
+import static info.victorchu.bamboo.segment.utils.SizeOf.instanceSize;
 
 public class SegmentStatus
         implements RetainedSizeAware
