@@ -9,4 +9,15 @@ public class PreConditions
                     fromIndex, size, length));
         }
     }
+
+    public static void checkFromToIndex(int fromIndex, int toIndex, int length)
+    {
+        if (fromIndex > toIndex) {
+            throw new IllegalArgumentException("fromIndex " + fromIndex + " > toIndex " + toIndex);
+        }
+        if (fromIndex < 0 || toIndex > length) {
+            throw new IndexOutOfBoundsException(String.format("Range [%d, %d) out of bounds for length %d",
+                    fromIndex, toIndex, length));
+        }
+    }
 }
