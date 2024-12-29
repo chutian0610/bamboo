@@ -47,14 +47,22 @@ public class ByteUtils
         return thisByte & 0xFF;
     }
 
-    public short unsignedByteToShort(byte value)
+    public static short unsignedByteToShort(byte value)
     {
         return (short) (value & 0xFF);
     }
 
-    public int unsignedShortToInt(short value)
+    public static int unsignedShortToInt(short value)
     {
         return value & 0xFFFF;
+    }
+
+    public static byte[] unsignedShortToBytes(short value)
+    {
+        byte[] bytes = new byte[2];
+        bytes[0] = (byte) ((value >> 8) & 0xFF); // Higher-order byte
+        bytes[1] = (byte) (value & 0xFF);       // Lower-order byte
+        return bytes;
     }
 
     public static long unsignedIntToLong(int value)

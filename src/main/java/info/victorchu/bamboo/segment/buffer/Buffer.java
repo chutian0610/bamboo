@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 
-import static info.victorchu.bamboo.segment.SizeCalculator.MAX_ARRAY_SIZE;
 import static info.victorchu.bamboo.segment.utils.JvmUtils.unsafe;
 import static info.victorchu.bamboo.segment.utils.PreConditions.checkFromIndexSize;
 import static info.victorchu.bamboo.segment.utils.SizeOf.SIZE_OF_BYTE;
@@ -33,7 +32,7 @@ import static sun.misc.Unsafe.ARRAY_SHORT_BASE_OFFSET;
 public class Buffer
         implements RetainedSizeAware
 {
-    static final Buffer EMPTY_BUFFER = new Buffer();
+    public static final Buffer EMPTY_BUFFER = new Buffer();
     private static final int INSTANCE_SIZE = instanceSize(Buffer.class);
     private final byte[] base;
     private final int baseOffset;
@@ -82,15 +81,22 @@ public class Buffer
         this.sizeCalculator = sizeCalculator;
     }
 
-    public static Buffer allocate(int capacity, SizeCalculator sizeCalculator)
+    /* subBuffer constructor
+     * subBuffer retainedSize same as origin Buffer
+     */
+    Buffer(byte[] base, int offset, int length, SizeCalculator sizeCalculator, long retainedSize)
     {
-        if (capacity == 0) {
-            return EMPTY_BUFFER;
+        requireNonNull(base, "base is null");
+        if (base.length == 0) {
+            throw new IllegalArgumentException("Empty array");
         }
-        if (capacity > MAX_ARRAY_SIZE) {
-            throw new BufferTooLargeException(String.format("Cannot allocate buffer larger than %s bytes", MAX_ARRAY_SIZE * SIZE_OF_BYTE));
-        }
-        return new Buffer(new byte[capacity], sizeCalculator == null ? DefaultBufferSizeCalculator.INSTANCE : sizeCalculator);
+        checkFromIndexSize(offset, length, base.length);
+
+        this.base = base;
+        this.baseOffset = offset;
+        this.size = length;
+        this.retainedSize = retainedSize;
+        this.sizeCalculator = sizeCalculator;
     }
 
     public int length()
@@ -167,7 +173,7 @@ public class Buffer
     public long getLong(int index)
     {
         checkFromIndexSize(index, SIZE_OF_LONG, length());
-        return unsafe.getInt(base, sizeOfByteArray(baseOffset + index));
+        return unsafe.getLong(base, sizeOfByteArray(baseOffset + index));
     }
 
     public float getFloat(int index)
@@ -515,6 +521,19 @@ public class Buffer
         return new Buffer(copy, sizeCalculator);
     }
     /* ========================= collection  ======================================= */
+
+    public Buffer slice(int index, int length)
+    {
+        if ((index == 0) && (length == length())) {
+            return this;
+        }
+        checkFromIndexSize(index, length, length());
+        if (length == 0) {
+            return Buffer.EMPTY_BUFFER;
+        }
+
+        return new Buffer(base, baseOffset + index, length, sizeCalculator, retainedSize);
+    }
 
     public Buffer copy()
     {
