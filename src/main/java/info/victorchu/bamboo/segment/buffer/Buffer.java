@@ -232,7 +232,7 @@ public class Buffer
         unsafe.putDouble(base, sizeOfByteArray(baseOffset + index), value);
     }
 
-    /* ====================== values copy from operation =========================*/
+    /* ====================== values get operation =========================*/
 
     public byte[] getBytes()
     {
@@ -382,7 +382,7 @@ public class Buffer
         unsafe.copyMemory(base, baseAddress + bytesToCopy, target, targetAddress + bytesToCopy, length - bytesToCopy);
     }
 
-    /* ====================== values copy into operation =========================*/
+    /* ====================== values set operation =========================*/
 
     public void setBytes(int index, Buffer source)
     {
