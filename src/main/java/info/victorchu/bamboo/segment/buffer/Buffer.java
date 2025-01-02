@@ -8,9 +8,13 @@ import info.victorchu.bamboo.segment.utils.XxHash64;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import static info.victorchu.bamboo.segment.utils.JvmUtils.unsafe;
+import static info.victorchu.bamboo.segment.utils.PreConditions.checkArgument;
 import static info.victorchu.bamboo.segment.utils.PreConditions.checkFromIndexSize;
 import static info.victorchu.bamboo.segment.utils.SizeOf.SIZE_OF_BYTE;
 import static info.victorchu.bamboo.segment.utils.SizeOf.SIZE_OF_DOUBLE;
@@ -21,6 +25,7 @@ import static info.victorchu.bamboo.segment.utils.SizeOf.SIZE_OF_SHORT;
 import static info.victorchu.bamboo.segment.utils.SizeOf.instanceSize;
 import static info.victorchu.bamboo.segment.utils.SizeOf.sizeOf;
 import static info.victorchu.bamboo.segment.utils.SizeOf.sizeOfByteArray;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
 import static sun.misc.Unsafe.ARRAY_BYTE_BASE_OFFSET;
 import static sun.misc.Unsafe.ARRAY_DOUBLE_BASE_OFFSET;
@@ -33,6 +38,8 @@ public class Buffer
         implements RetainedSizeAware
 {
     public static final Buffer EMPTY_BUFFER = new Buffer();
+    private static final ByteBuffer EMPTY_BYTE_BUFFER = ByteBuffer.allocate(0);
+
     private static final int INSTANCE_SIZE = instanceSize(Buffer.class);
     private final byte[] base;
     private final int baseOffset;
@@ -99,6 +106,14 @@ public class Buffer
         this.sizeCalculator = sizeCalculator;
     }
 
+    private static String identityToString(Object o)
+    {
+        if (o == null) {
+            return null;
+        }
+        return o.getClass().getName() + "@" + Integer.toHexString(System.identityHashCode(o));
+    }
+
     public int length()
     {
         return size;
@@ -119,12 +134,12 @@ public class Buffer
         return baseOffset;
     }
 
+    /* ====================== init operation =========================*/
+
     public boolean isCompact()
     {
         return baseOffset == 0 && size == base.length;
     }
-
-    /* ====================== init operation =========================*/
 
     public void fill(byte value)
     {
@@ -136,12 +151,12 @@ public class Buffer
         Arrays.fill(base, baseOffset, baseOffset + size, (byte) 0);
     }
 
+    /* ====================== value read operation =========================*/
+
     public void clear()
     {
         clear(0, size);
     }
-
-    /* ====================== value read operation =========================*/
 
     /**
      * @param index byte[] 中的开始位置
@@ -153,9 +168,14 @@ public class Buffer
         return getByteUnchecked(index);
     }
 
-    public byte getByteUnchecked(int index)
+    private byte getByteUnchecked(int index)
     {
         return base[baseOffset + index];
+    }
+
+    public short getUnsignedByte(int index)
+    {
+        return ByteUtils.unsignedByteToShort(getByte(index));
     }
 
     public short getShort(int index)
@@ -164,10 +184,25 @@ public class Buffer
         return unsafe.getShort(base, sizeOfByteArray(baseOffset + index));
     }
 
-    public int getInt(int index)
+    public int getUnsignedShort(int index)
+    {
+        return ByteUtils.unsignedShortToInt(getShort(index));
+    }
+
+    private int getIntegerUnchecked(int index)
+    {
+        return unsafe.getInt(base, sizeOfByteArray(baseOffset + index));
+    }
+
+    public int getInteger(int index)
     {
         checkFromIndexSize(index, SIZE_OF_INT, length());
         return unsafe.getInt(base, sizeOfByteArray(baseOffset + index));
+    }
+
+    public long getUnsignedInteger(int index)
+    {
+        return ByteUtils.unsignedIntToLong(getInteger(index));
     }
 
     public long getLong(int index)
@@ -202,10 +237,22 @@ public class Buffer
         base[baseOffset + index] = value;
     }
 
-    void setShort(int index, short value)
+    public void setByte(int index, int value)
+    {
+        checkFromIndexSize(index, SIZE_OF_BYTE, length());
+        base[baseOffset + index] = (byte) (value & 0xFF);
+    }
+
+    public void setShort(int index, short value)
     {
         checkFromIndexSize(index, SIZE_OF_SHORT, length());
         unsafe.putShort(base, sizeOfByteArray(baseOffset + index), value);
+    }
+
+    public void setShort(int index, int value)
+    {
+        checkFromIndexSize(index, SIZE_OF_SHORT, length());
+        unsafe.putShort(base, sizeOfByteArray(baseOffset + index), (short) (value & 0xFFFF));
     }
 
     public void setInt(int index, int value)
@@ -226,13 +273,13 @@ public class Buffer
         unsafe.putFloat(base, sizeOfByteArray(baseOffset + index), value);
     }
 
+    /* ====================== values get operation =========================*/
+
     public void setDouble(int index, double value)
     {
         checkFromIndexSize(index, SIZE_OF_DOUBLE, length());
         unsafe.putDouble(base, sizeOfByteArray(baseOffset + index), value);
     }
-
-    /* ====================== values get operation =========================*/
 
     public byte[] getBytes()
     {
@@ -372,6 +419,8 @@ public class Buffer
         copyFromBase(index, destination, ARRAY_DOUBLE_BASE_OFFSET + ((long) destinationIndex * Double.BYTES), length * Double.BYTES);
     }
 
+    /* ====================== values set operation =========================*/
+
     private void copyFromBase(int index, Object target, long targetAddress, int length)
     {
         int baseAddress = ARRAY_BYTE_BASE_OFFSET + baseOffset + index;
@@ -381,8 +430,6 @@ public class Buffer
         unsafe.copyMemory(base, baseAddress, target, targetAddress, bytesToCopy);
         unsafe.copyMemory(base, baseAddress + bytesToCopy, target, targetAddress + bytesToCopy, length - bytesToCopy);
     }
-
-    /* ====================== values set operation =========================*/
 
     public void setBytes(int index, Buffer source)
     {
@@ -484,6 +531,8 @@ public class Buffer
         copyToBase(index, source, ARRAY_DOUBLE_BASE_OFFSET + ((long) sourceIndex * Double.BYTES), length * Double.BYTES);
     }
 
+    /* ========================= capacity operation ==============================*/
+
     private void copyToBase(int index, Object src, long srcAddress, int length)
     {
         int baseAddress = ARRAY_BYTE_BASE_OFFSET + baseOffset + index;
@@ -493,8 +542,7 @@ public class Buffer
         unsafe.copyMemory(src, srcAddress, base, baseAddress, bytesToCopy);
         unsafe.copyMemory(src, srcAddress + bytesToCopy, base, baseAddress + bytesToCopy, length - bytesToCopy);
     }
-
-    /* ========================= capacity operation ==============================*/
+    /* ========================= collection  ======================================= */
 
     public Buffer ensureSize(int minWritableBytes)
     {
@@ -520,7 +568,6 @@ public class Buffer
         Arrays.fill(copy, length(), bytes.length - offset, (byte) 0);
         return new Buffer(copy, sizeCalculator);
     }
-    /* ========================= collection  ======================================= */
 
     public Buffer slice(int index, int length)
     {
@@ -637,5 +684,181 @@ public class Buffer
     public int hashCode(int offset, int length)
     {
         return (int) XxHash64.hash(this, offset, length);
+    }
+
+    public String toString(Charset charset)
+    {
+        return toString(0, length(), charset);
+    }
+
+    /**
+     * Decodes the contents of this slice into a string using the UTF-8
+     * character set.
+     */
+    public String toStringUtf8()
+    {
+        return toString(UTF_8);
+    }
+
+    /**
+     * Decodes the contents of this slice into a string using the US_ASCII
+     * character set.  The low-order 7 bits of each byte are converted directly
+     * into a code point for the string.
+     */
+    public String toStringAscii()
+    {
+        return toStringAscii(0, size);
+    }
+
+    public String toStringAscii(int index, int length)
+    {
+        checkFromIndexSize(index, length, length());
+        if (length == 0) {
+            return "";
+        }
+
+        return new String(byteArray(), byteArrayOffset() + index, length, StandardCharsets.US_ASCII);
+    }
+
+    /**
+     * Decodes the specified portion of this slice into a string with the specified
+     * character set name.
+     */
+    public String toString(int index, int length, Charset charset)
+    {
+        if (length == 0) {
+            return "";
+        }
+        return new String(byteArray(), byteArrayOffset() + index, length, charset);
+    }
+
+    @Override
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder("Slice{");
+        builder.append("base=").append(identityToString(base)).append(", ");
+        builder.append("baseOffset=").append(baseOffset);
+        builder.append(", length=").append(length());
+        builder.append('}');
+        return builder.toString();
+    }
+
+    public ByteBuffer toByteBuffer()
+    {
+        return toByteBuffer(0, size);
+    }
+
+    public ByteBuffer toByteBuffer(int index, int length)
+    {
+        checkFromIndexSize(index, length, length());
+
+        if (length() == 0) {
+            return EMPTY_BYTE_BUFFER;
+        }
+        return ByteBuffer.wrap(byteArray(), byteArrayOffset() + index, length).slice();
+    }
+
+    public int indexOfByte(int b)
+    {
+        checkArgument((b >> Byte.SIZE) == 0, "byte value out of range");
+        return indexOfByte((byte) b);
+    }
+
+    public int indexOfByte(byte b)
+    {
+        for (int i = 0; i < size; i++) {
+            if (getByteUnchecked(i) == b) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public int indexOf(Buffer buffer)
+    {
+        return indexOf(buffer, 0);
+    }
+
+    public int indexOf(Buffer pattern, int offset)
+    {
+        if (size == 0 || offset >= size || offset < 0) {
+            return -1;
+        }
+
+        if (pattern.length() == 0) {
+            return offset;
+        }
+
+        // Do we have enough characters?
+        if (pattern.length() < SIZE_OF_INT || size < SIZE_OF_LONG) {
+            return indexOfBruteForce(pattern, offset);
+        }
+
+        // Using the first four bytes for faster search. We are not using eight bytes for long
+        // because we want more strings to get use of fast search.
+        int head = pattern.getIntegerUnchecked(0);
+
+        // Take the first byte of head for faster skipping
+        int firstByteMask = head & 0xff;
+        firstByteMask |= firstByteMask << 8;
+        firstByteMask |= firstByteMask << 16;
+
+        int lastValidIndex = size - pattern.length();
+        int index = offset;
+        while (index <= lastValidIndex) {
+            // Read four bytes in sequence
+            int value = getIntegerUnchecked(index);
+
+            // Compare all bytes of value with the first byte of search data
+            // see https://graphics.stanford.edu/~seander/bithacks.html#ZeroInWord
+            int valueXor = value ^ firstByteMask;
+            int hasZeroBytes = (valueXor - 0x01010101) & ~valueXor & 0x80808080;
+
+            // If valueXor doesn't have any zero bytes, then there is no match and we can advance
+            if (hasZeroBytes == 0) {
+                index += SIZE_OF_INT;
+                continue;
+            }
+
+            // Try fast match of head and the rest
+            if (value == head && equalsUnchecked(index, pattern, 0, pattern.length())) {
+                return index;
+            }
+
+            index++;
+        }
+        return -1;
+    }
+
+    int indexOfBruteForce(Buffer pattern, int offset)
+    {
+        if (size == 0 || offset >= size || offset < 0) {
+            return -1;
+        }
+
+        if (pattern.length() == 0) {
+            return offset;
+        }
+
+        byte firstByte = pattern.getByteUnchecked(0);
+        int lastValidIndex = size - pattern.length();
+        int index = offset;
+        while (true) {
+            // seek to first byte match
+            while (index < lastValidIndex && getByteUnchecked(index) != firstByte) {
+                index++;
+            }
+            if (index > lastValidIndex) {
+                break;
+            }
+
+            if (equalsUnchecked(index, pattern, 0, pattern.length())) {
+                return index;
+            }
+
+            index++;
+        }
+
+        return -1;
     }
 }

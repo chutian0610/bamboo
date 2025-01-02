@@ -2,9 +2,13 @@ package info.victorchu.bamboo.segment.buffer;
 
 import info.victorchu.bamboo.segment.SizeCalculator;
 
+import java.nio.charset.Charset;
+
 import static info.victorchu.bamboo.segment.SizeCalculator.MAX_ARRAY_SIZE;
 import static info.victorchu.bamboo.segment.buffer.Buffer.EMPTY_BUFFER;
 import static info.victorchu.bamboo.segment.utils.SizeOf.SIZE_OF_BYTE;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Objects.requireNonNull;
 
 public class Buffers
 {
@@ -15,13 +19,44 @@ public class Buffers
         }
         return new Buffer(array, DefaultBufferSizeCalculator.INSTANCE);
     }
-    public static Buffer wrappedBuffer(byte[] array,SizeCalculator sizeCalculator)
+
+    public static Buffer wrappedBuffer(byte[] array, SizeCalculator sizeCalculator)
     {
         if (array.length == 0) {
             return EMPTY_BUFFER;
         }
         return new Buffer(array, sizeCalculator == null ? DefaultBufferSizeCalculator.INSTANCE : sizeCalculator);
     }
+
+    public static Buffer wrappedBuffer(byte[] array, int offset, int length)
+    {
+        if (length == 0) {
+            return EMPTY_BUFFER;
+        }
+        return new Buffer(array, offset, length, DefaultBufferSizeCalculator.INSTANCE);
+    }
+
+    public static Buffer wrappedBuffer(byte[] array, int offset, int length, SizeCalculator sizeCalculator)
+    {
+        if (length == 0) {
+            return EMPTY_BUFFER;
+        }
+        return new Buffer(array, offset, length, sizeCalculator == null ? DefaultBufferSizeCalculator.INSTANCE : sizeCalculator);
+    }
+
+    public static Buffer copiedBuffer(String string, Charset charset)
+    {
+        requireNonNull(string, "string is null");
+        requireNonNull(charset, "charset is null");
+
+        return wrappedBuffer(string.getBytes(charset));
+    }
+
+    public static Buffer utf8Buffer(String string)
+    {
+        return copiedBuffer(string, UTF_8);
+    }
+
     public static Buffer allocate(int capacity)
     {
         if (capacity == 0) {
@@ -32,6 +67,7 @@ public class Buffers
         }
         return new Buffer(new byte[capacity], DefaultBufferSizeCalculator.INSTANCE);
     }
+
     public static Buffer allocate(int capacity, SizeCalculator sizeCalculator)
     {
         if (capacity == 0) {
