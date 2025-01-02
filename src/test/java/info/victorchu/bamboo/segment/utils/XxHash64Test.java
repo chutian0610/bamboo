@@ -102,14 +102,14 @@ class XxHash64Test
     {
         long expected = 0xEF46DB3751D8E999L;
 
-        assertThat(hash(Buffer.EMPTY_BUFFER)).isEqualTo(expected);
-        assertThat(hash(Buffer.EMPTY_BUFFER, 0, 0)).isEqualTo(expected);
+        assertThat(hash(Buffer.EMPTY_BUFFER())).isEqualTo(expected);
+        assertThat(hash(Buffer.EMPTY_BUFFER(), 0, 0)).isEqualTo(expected);
 
-        assertThat(hash(0, Buffer.EMPTY_BUFFER)).isEqualTo(expected);
-        assertThat(hash(0, Buffer.EMPTY_BUFFER, 0, 0)).isEqualTo(expected);
+        assertThat(hash(0, Buffer.EMPTY_BUFFER())).isEqualTo(expected);
+        assertThat(hash(0, Buffer.EMPTY_BUFFER(), 0, 0)).isEqualTo(expected);
 
-        assertThat(new XxHash64().update(Buffer.EMPTY_BUFFER).hash()).isEqualTo(expected);
-        assertThat(new XxHash64().update(Buffer.EMPTY_BUFFER, 0, 0).hash()).isEqualTo(expected);
+        assertThat(new XxHash64().update(Buffer.EMPTY_BUFFER()).hash()).isEqualTo(expected);
+        assertThat(new XxHash64().update(Buffer.EMPTY_BUFFER(), 0, 0).hash()).isEqualTo(expected);
 
         assertThat(new XxHash64().update(EMPTY_BYTES).hash()).isEqualTo(expected);
         assertThat(new XxHash64().update(EMPTY_BYTES, 0, 0).hash()).isEqualTo(expected);
@@ -118,8 +118,8 @@ class XxHash64Test
                 new XxHash64()
                         .update(EMPTY_BYTES)
                         .update(EMPTY_BYTES, 0, 0)
-                        .update(Buffer.EMPTY_BUFFER)
-                        .update(Buffer.EMPTY_BUFFER, 0, 0)
+                        .update(Buffer.EMPTY_BUFFER())
+                        .update(Buffer.EMPTY_BUFFER(), 0, 0)
                         .hash())
                 .isEqualTo(expected);
     }

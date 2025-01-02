@@ -94,4 +94,12 @@ public class LongSegment
         }
         return this;
     }
+    @Override
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder("LongSegment{");
+        sb.append("position=").append(position);
+        sb.append('}');
+        return sb.toString();
+    }
 }

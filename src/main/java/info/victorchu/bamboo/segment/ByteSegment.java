@@ -94,4 +94,12 @@ public class ByteSegment
         }
         return this;
     }
+    @Override
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder("ByteSegment{");
+        sb.append("position=").append(getPosition());
+        sb.append('}');
+        return sb.toString();
+    }
 }

@@ -37,7 +37,12 @@ import static sun.misc.Unsafe.ARRAY_SHORT_BASE_OFFSET;
 public class Buffer
         implements RetainedSizeAware
 {
-    public static final Buffer EMPTY_BUFFER = new Buffer();
+    public static Buffer EMPTY_BUFFER(){
+        return new Buffer(DefaultBufferSizeCalculator.INSTANCE);
+    }
+    public static Buffer EMPTY_BUFFER(SizeCalculator sizeCalculator){
+        return new Buffer(sizeCalculator);
+    }
     private static final ByteBuffer EMPTY_BYTE_BUFFER = ByteBuffer.allocate(0);
 
     private static final int INSTANCE_SIZE = instanceSize(Buffer.class);
@@ -48,16 +53,13 @@ public class Buffer
     private int hash;
     private SizeCalculator sizeCalculator;
 
-    /**
-     * only for Buffer.EMPTY_BUFFER
-     */
-    private Buffer()
+    private Buffer(SizeCalculator sizeCalculator)
     {
         this.base = new byte[0];
         this.baseOffset = 0;
         this.size = 0;
         this.retainedSize = INSTANCE_SIZE;
-        this.sizeCalculator = DefaultBufferSizeCalculator.INSTANCE;
+        this.sizeCalculator = sizeCalculator;
     }
 
     Buffer(byte[] base, SizeCalculator sizeCalculator)
@@ -560,7 +562,7 @@ public class Buffer
         else {
             newCapacity = length();
         }
-        newCapacity = sizeCalculator.calculateNewArraySize(newCapacity, newCapacity + minWritableBytes);
+        newCapacity = sizeCalculator.calculateNewArraySize(newCapacity, minWritableBytes);
         byte[] bytes = byteArray();
         int offset = byteArrayOffset();
         byte[] copy = Arrays.copyOfRange(bytes, offset, offset + newCapacity);
@@ -576,7 +578,7 @@ public class Buffer
         }
         checkFromIndexSize(index, length, length());
         if (length == 0) {
-            return Buffer.EMPTY_BUFFER;
+            return Buffer.EMPTY_BUFFER(sizeCalculator);
         }
 
         return new Buffer(base, baseOffset + index, length, sizeCalculator, retainedSize);
@@ -585,7 +587,7 @@ public class Buffer
     public Buffer copy()
     {
         if (size == 0) {
-            return Buffer.EMPTY_BUFFER;
+            return Buffer.EMPTY_BUFFER(sizeCalculator);
         }
         return new Buffer(Arrays.copyOfRange(base, baseOffset, baseOffset + size), sizeCalculator);
     }
@@ -594,7 +596,7 @@ public class Buffer
     {
         checkFromIndexSize(index, length, size);
         if (length == 0) {
-            return Buffer.EMPTY_BUFFER;
+            return Buffer.EMPTY_BUFFER(sizeCalculator);
         }
         return new Buffer(Arrays.copyOfRange(base, baseOffset + index, baseOffset + index + length), sizeCalculator);
     }

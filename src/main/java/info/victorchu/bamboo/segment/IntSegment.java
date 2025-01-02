@@ -95,4 +95,12 @@ public class IntSegment
     {
         return SIZE_IN_BYTES_PER_ENTITY;
     }
+    @Override
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder("IntSegment{");
+        sb.append("position=").append(position);
+        sb.append('}');
+        return sb.toString();
+    }
 }

@@ -96,4 +96,12 @@ public class ShortSegment
         }
         return this;
     }
+    @Override
+    public String toString()
+    {
+        StringBuilder sb = new StringBuilder("ShortSegment{");
+        sb.append("position=").append(getPosition());
+        sb.append('}');
+        return sb.toString();
+    }
 }

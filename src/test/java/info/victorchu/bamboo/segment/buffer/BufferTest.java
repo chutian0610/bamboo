@@ -105,23 +105,23 @@ class BufferTest
 
     private static void testCompareWithEmpty(int size, Buffer slice)
     {
-        assertThat(slice).isNotEqualTo(EMPTY_BUFFER);
-        assertThat(EMPTY_BUFFER).isNotEqualTo(slice);
+        assertThat(slice).isNotEqualTo(EMPTY_BUFFER());
+        assertThat(EMPTY_BUFFER()).isNotEqualTo(slice);
 
-        assertThat(slice.equals(0, size, EMPTY_BUFFER, 0, 0)).isFalse();
-        assertThat(EMPTY_BUFFER.equals(0, 0, slice, 0, size)).isFalse();
+        assertThat(slice.equals(0, size, EMPTY_BUFFER(), 0, 0)).isFalse();
+        assertThat(EMPTY_BUFFER().equals(0, 0, slice, 0, size)).isFalse();
 
-        assertThat(slice.compareTo(0, size, EMPTY_BUFFER, 0, 0) > 0).isTrue();
-        assertThat(EMPTY_BUFFER.compareTo(0, 0, slice, 0, size) < 0).isTrue();
+        assertThat(slice.compareTo(0, size, EMPTY_BUFFER(), 0, 0) > 0).isTrue();
+        assertThat(EMPTY_BUFFER().compareTo(0, 0, slice, 0, size) < 0).isTrue();
 
-        assertThatThrownBy(() -> slice.equals(0, size, EMPTY_BUFFER, 0, size))
+        assertThatThrownBy(() -> slice.equals(0, size, EMPTY_BUFFER(), 0, size))
                 .isInstanceOf(IndexOutOfBoundsException.class);
-        assertThatThrownBy(() -> EMPTY_BUFFER.equals(0, size, slice, 0, size))
+        assertThatThrownBy(() -> EMPTY_BUFFER().equals(0, size, slice, 0, size))
                 .isInstanceOf(IndexOutOfBoundsException.class);
 
-        assertThatThrownBy(() -> slice.compareTo(0, size, EMPTY_BUFFER, 0, size))
+        assertThatThrownBy(() -> slice.compareTo(0, size, EMPTY_BUFFER(), 0, size))
                 .isInstanceOf(IndexOutOfBoundsException.class);
-        assertThatThrownBy(() -> EMPTY_BUFFER.compareTo(0, size, slice, 0, size))
+        assertThatThrownBy(() -> EMPTY_BUFFER().compareTo(0, size, slice, 0, size))
                 .isInstanceOf(IndexOutOfBoundsException.class);
     }
 
@@ -763,8 +763,8 @@ class BufferTest
             throws Exception
     {
         // slightly stronger guarantees for empty slice
-        assertThat(EMPTY_BUFFER.copy()).isSameAs(EMPTY_BUFFER);
-        assertThat(utf8Buffer("hello world").copy(1, 0)).isSameAs(EMPTY_BUFFER);
+        assertThat(EMPTY_BUFFER().copy().equals(EMPTY_BUFFER())).isTrue();
+        assertThat(utf8Buffer("hello world").copy(1, 0).equals(EMPTY_BUFFER())).isTrue();
 
         Buffer buffer = utf8Buffer("hello world");
         assertThat(buffer.copy()).isEqualTo(buffer);
@@ -802,8 +802,8 @@ class BufferTest
         assertIndexOf(utf8Buffer("a-test-middle"), utf8Buffer("test"));
         assertIndexOf(utf8Buffer("this-test-is-a-test"), utf8Buffer("test"));
 
-        assertIndexOf(utf8Buffer("test"), EMPTY_BUFFER, 0, 0);
-        assertIndexOf(EMPTY_BUFFER, utf8Buffer("test"), 0, -1);
+        assertIndexOf(utf8Buffer("test"), EMPTY_BUFFER(), 0, 0);
+        assertIndexOf(EMPTY_BUFFER(), utf8Buffer("test"), 0, -1);
 
         assertIndexOf(utf8Buffer("test"), utf8Buffer("no"), 4, -1);
         assertIndexOf(utf8Buffer("test"), utf8Buffer("no"), 5, -1);
