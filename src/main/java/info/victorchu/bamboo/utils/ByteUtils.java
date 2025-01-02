@@ -1,10 +1,8 @@
-package info.victorchu.bamboo.segment.utils;
+package info.victorchu.bamboo.utils;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-
-import static info.victorchu.bamboo.segment.utils.PreConditions.checkFromToIndex;
 
 public class ByteUtils
 {
@@ -87,8 +85,8 @@ public class ByteUtils
 
     public static int compareUnsigned(byte[] a, int aFromIndex, int aToIndex, byte[] b, int bFromIndex, int bToIndex)
     {
-        checkFromToIndex(aFromIndex, aToIndex, a.length);
-        checkFromToIndex(bFromIndex, bToIndex, b.length);
+        Preconditions.checkFromToIndex(aFromIndex, aToIndex, a.length);
+        Preconditions.checkFromToIndex(bFromIndex, bToIndex, b.length);
         int aLen = aToIndex - aFromIndex;
         int bLen = bToIndex - bFromIndex;
         int len = Math.min(aLen, bLen);
@@ -106,8 +104,8 @@ public class ByteUtils
 
     public static boolean equals(byte[] a, int aFromIndex, int aToIndex, byte[] b, int bFromIndex, int bToIndex)
     {
-        checkFromToIndex(aFromIndex, aToIndex, a.length);
-        checkFromToIndex(bFromIndex, bToIndex, b.length);
+        Preconditions.checkFromToIndex(aFromIndex, aToIndex, a.length);
+        Preconditions.checkFromToIndex(bFromIndex, bToIndex, b.length);
         int aLen = aToIndex - aFromIndex;
         int bLen = bToIndex - bFromIndex;
         // lengths differ: cannot be equal
